@@ -69,7 +69,7 @@ public class AES {
 
 
     public static void main(String[] args) {
-        String msg="123456789qwertyuiohuihiuhiuhiu123";//要加密的字符串。
+        String msg="123456789qwertyuiohui333hiuhiuhiu123";//要加密的字符串。
         String key = "abcdefghijklmnop";
 
         String encodeMsg = encode(msg, key);
@@ -86,23 +86,21 @@ public class AES {
      * @param key 密钥
      * @return 密文（Base64加密）
      */
-    public static String encode(String str, String key){
-        StringBuffer sb = new StringBuffer();
+    private static String encode(String str, String key){
+        StringBuilder sb = new StringBuilder();
         char [][]chars;
         int l=(str.length()/16)+1;
         int i=0;
         for (int j = 0; j <str.length(); j = j + 16) {
             if (i != l - 1) {
-                str.substring(j, j + 16);
                 chars = enCode(str.substring(j, j + 16), key);
 
             } else {
-                str.substring(j, str.length() - 1);
-                chars = enCode(str.substring(j, str.length()), key);
+                chars = enCode(str.substring(j), key);
             }
-            for (int x = 0; x < chars.length; x++) {
+            for (char[] aChar : chars) {
                 for (int y = 0; y < chars[i].length; y++) {
-                    sb.append(chars[x][y]);
+                    sb.append(aChar[y]);
                 }
             }
 
@@ -111,10 +109,9 @@ public class AES {
         return Base64.getEncoder().encodeToString(sb.toString().getBytes());
     }
 
-    public static char[][] enCode(String str1, String keys){
-        String str=str1;
+    private static char[][] enCode(String str, String keys){
         char [][] chars=new char[4][4];//chars2是明文，用二维字符数组存储。
-        char[][] key=new char[4][44];//chars是密钥，除了初始密钥，还有10轮的子密钥。
+        char[][] key;//chars是密钥，除了初始密钥，还有10轮的子密钥。
         int s=0;
         //把输入的str字符串，赋值给二维数组
         for(int i=0;i<4;i++) {
@@ -135,7 +132,7 @@ public class AES {
             }
         }
         //进行10论加密，调用10次roundEnCode(),最后一次不执行列混合。
-        char chars1[][]=new char[4][4];//用于存储每一轮的子密钥
+        char[][] chars1 =new char[4][4];//用于存储每一轮的子密钥
         for(int i=1;i<=10;i++){
             for(int m=0;m<4;m++) {
                 int k=0;
@@ -148,8 +145,8 @@ public class AES {
         return chars;
     }
 
-    public static String decode(String str1, String key){
-        String decodeMsg="";
+    private static String decode(String str1, String key){
+        StringBuilder decodeMsg= new StringBuilder();
         String str=new String(Base64.getDecoder().decode(str1));
         char [][]chars=new char[4][4];
         for(int i=0;i<str.length();i=i+16){
@@ -160,14 +157,14 @@ public class AES {
                     chars[j][k]=str2.charAt(m++);
                 }
             }
-            decodeMsg+=deCode(chars, key);
+            decodeMsg.append(deCode(chars, key));
         }
-        return decodeMsg;
+        return decodeMsg.toString();
     }
     //轮解密函数
-    public static String deCode(char chars[][], String keys){
+    private static String deCode(char[][] chars, String keys){
         int flag=1;//0加密，1解密。
-        char[][] key=new char[4][44];//chars是密钥，除了初始密钥，还有10轮的子密钥。
+        char[][] key;//chars是密钥，除了初始密钥，还有10轮的子密钥。
         key=productSubKey(keys);
         //密文初始化
         for(int i=0;i<4;i++){
@@ -178,7 +175,7 @@ public class AES {
             }
         }
         //进行10论解密，调用10次round(),最后一次不执行逆列混合。
-        char chars1[][]=new char[4][4];//用于存储每一轮的子密钥
+        char[][] chars1 =new char[4][4];//用于存储每一轮的子密钥
         for(int i=9;i>=0;i--){
             for(int m=0;m<4;m++) {
                 int k=0;
@@ -188,7 +185,7 @@ public class AES {
             }
            chars=round1(chars,chars1,10-i,flag);//chars是要加密的串，chars1为每轮加密的密钥
         }
-     StringBuffer sb=new StringBuffer();
+     StringBuilder sb=new StringBuilder();
         for(int i=0;i<4;i++){
             for(int j=0;j<4;j++){
                 if(chars[j][i] != 0){
@@ -199,7 +196,7 @@ public class AES {
         return sb.toString();
     }
     //轮加密解函数
-    public static char[][] round(char[][] chars2,char [][] chars3,int k,int flag){//chars是128位明文，4行4列的二维数组
+    private static char[][] round(char[][] chars2,char [][] chars3,int k,int flag){//chars是128位明文，4行4列的二维数组
         //对明文进行s盒代换
         for(int i=0;i<4;i++) {
             for (int j = 0; j < 4; j++) {
@@ -223,7 +220,7 @@ public class AES {
         }
         return chars2;
     }
-    public static char[][] round1(char[][] chars2,char [][] chars3,int k,int flag){//chars是128位明文，4行4列的二维数组
+    private static char[][] round1(char[][] chars2,char [][] chars3,int k,int flag){//chars是128位明文，4行4列的二维数组
         //循环移位，chars[i]循环右移i个字节
         for(int i=0;i<4;i++){
             for(int j=0;j<i;j++){
@@ -249,8 +246,8 @@ public class AES {
         return chars2;
     }
     //列混合
-    public static char[][] columnMix(char[][] chars,int flag){
-        char chars1[][]=new char[4][4];
+    private static char[][] columnMix(char[][] chars,int flag){
+        char[][] chars1 =new char[4][4];
 
         int m,n,o,p;
         if(flag==0){
@@ -278,10 +275,10 @@ public class AES {
         return chars1;
     }
 
-    public static int doubleX(int  x) {
+    private static int doubleX(int  x) {
         return ((x<<1)&0xff^(((x&0x80)==128)?0x1b:0x00));
     }
-    public static int multiply(int a,int b){
+    private static int multiply(int a,int b){
        int []temp=new int[8];
        temp[0]=a;
        int tempmultiply=0x00;
@@ -296,7 +293,7 @@ public class AES {
     }
 
     //生成子密钥
-    public static char[][] productSubKey(String key){
+    private static char[][] productSubKey(String key){
         //初始密钥
         char[][] chars1=new char[4][44];//初始密钥和每一轮的子密钥
        //128位初始密钥通过随机函数生成
@@ -327,7 +324,7 @@ public class AES {
         return chars1;
     }
     //子密钥生成过程中的T函数
-    public static char[] T(char[] chars,int i){
+    private static char[] T(char[] chars,int i){
            char [] ch=chars;
            ch=leftCir(ch);//循环左移
             for(int j=0;j<4;j++){
@@ -338,7 +335,7 @@ public class AES {
             return ch;
     }
     //左循环移位一个字节
-    public static char[] leftCir(char []chars){//chars是四个字节的数组，32比特
+    private static char[] leftCir(char []chars){//chars是四个字节的数组，32比特
         char temp=chars[0];
         chars[0]=chars[1];
         chars[1]=chars[2];
@@ -346,7 +343,7 @@ public class AES {
         chars[3]=temp;
         return chars;
     }
-    public static char[] rightCir(char []chars){//chars是四个字节的数组，32比特
+    private static char[] rightCir(char []chars){//chars是四个字节的数组，32比特
         char temp=chars[3];
         chars[3]=chars[2];
         chars[2]=chars[1];
@@ -355,7 +352,7 @@ public class AES {
         return chars;
     }
     //s盒
-    public static char S(char ch,int flag) {
+    private static char S(char ch,int flag) {
                int num=ch;
         int left=num&0xf0;
         left=left>>4;
