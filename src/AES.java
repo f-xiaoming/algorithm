@@ -70,7 +70,7 @@ public class AES {
 
     public static void main(String[] args) {
         String msg="123456789qwertyuiohui333hiuhiuhiu123";//要加密的字符串。
-        String key = "abcdefghijklmnop";
+        String key = "abcdefg";
 
         String encodeMsg = encode(msg, key);
         System.out.println("密文： ");
@@ -119,7 +119,7 @@ public class AES {
                 if (s< str.length()) {
                     chars[j][i] = str.charAt(s++);//把输入的明文的值用二维字符数组存储。
                 } else {
-                    chars[j][i] =0;//不够128比特1的补充0
+                    chars[j][i] =0x00;//不够128比特1的补充0
                 }
             }
         }
@@ -300,7 +300,11 @@ public class AES {
         int k=0;
         for(int i=0;i<4;i++){
             for(int j=0;j<4;j++){
-                chars1[j][i]=key.charAt(k++);
+                if(k<key.length()){
+                    chars1[j][i]=key.charAt(k++);
+                }else{
+                    chars1[j][i]=0x00;
+                }
             }
         }
         //子密钥的生成。
