@@ -1,11 +1,10 @@
-package com.xiaofang;
+package com.xiaofang.socket;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
 public class SocketTest1 {
-
     public static void main(String args[]) throws Exception {
         // 要连接的服务端IP地址和端口
         String host = "127.0.0.1";
@@ -14,7 +13,7 @@ public class SocketTest1 {
         Socket socket = new Socket(host, port);
         // 建立连接后获得输出流
         OutputStream outputStream = socket.getOutputStream();
-        String message = "你好  yiwangzhibujian";
+        String message = "你好";
         socket.getOutputStream().write(message.getBytes("UTF-8"));
         //通过shutdownOutput高速服务器已经发送完数据，后续只能接受数据
         socket.shutdownOutput();

@@ -6,12 +6,10 @@ import java.util.*;
 public class StringsSort {
     public static void main(String[] args) {
         Random r = new Random(1);
-        //List<String> list=new ArrayList<String>();
         BufferedWriter bw1= null;
         OutputStreamWriter writer1 = null;
         BufferedWriter bw2= null;
         OutputStreamWriter writer2 = null;
-
         System.out.println("请输入要随机生成的字符串的个数：");
         Scanner sc=new Scanner(System.in);
         int n=sc.nextInt();
